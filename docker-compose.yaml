@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    container_name: 'postgres'
+    ports:
+      - '5432:5432'
+    environment:
+      - 'POSTGRES_USER=myuser'
+      - 'POSTGRES_DB=mydb'
+      - 'POSTGRES_PASSWORD=mypass'
+
+  redis:
+    image: 'redis:latest'
+    container_name: "redis"
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    command: >
+      redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep -q PONG" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+    sysctls:
+      # Default 511 will silently drop connections during a reconnect storm.
+      net.core.somaxconn: 4096
+
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+    mem_limit: 3g
