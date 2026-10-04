@@ -38,7 +38,7 @@ Run the application (uses the `dev` profile by default):
 ./gradlew bootRun
 ```
 
-The service listens on `http://localhost:8080`. In the `dev` profile Hibernate creates the schema automatically (`ddl-auto: update`).
+The service listens on `http://localhost:8080`. The schema is created by [Flyway](https://flywaydb.org/) migrations in [`src/main/resources/db/migration`](src/main/resources/db/migration) when the app starts.
 
 ### Run tests
 
@@ -97,8 +97,10 @@ Settings are read from environment variables, with local defaults in [`applicati
 
 ### Profiles
 
-- **`dev`**: auto schema updates, SQL and request logging, all Actuator endpoints exposed, 100% trace sampling.
-- **`prod`**: schema validation only (`ddl-auto: validate`), INFO logging, limited Actuator endpoints.
+In both profiles Flyway owns the schema and Hibernate only validates it (`ddl-auto: validate`). To change the schema, add a new `V<n>__description.sql` migration.
+
+- **`dev`**: SQL and request logging, all Actuator endpoints exposed, 100% trace sampling. Existing local databases without Flyway history are baselined at V1.
+- **`prod`**: INFO logging, limited Actuator endpoints.
 
 Actuator endpoints are available under `/actuator` (`health`, `metrics`, `prometheus`, and more in `dev`).
 
@@ -120,7 +122,13 @@ The manifests in [`application/`](application/) deploy the app (2 replicas behin
 kubectl apply -f application/
 ```
 
-These manifests are a work in progress. Secrets (database credentials) are not included in the repository, so you need to create your own, for example as a `Secret` or a [Sealed Secret](https://github.com/bitnami-labs/sealed-secrets).
+Both the app and PostgreSQL read `POSTGRES_USER` and `POSTGRES_PASSWORD` from a Secret named `app-secrets` in the `urlshortner` namespace. It is not included in the repository, so create it before applying the manifests:
+
+```bash
+kubectl create secret generic app-secrets -n urlshortner --from-literal=POSTGRES_USER=<user> --from-literal=POSTGRES_PASSWORD=<password>
+```
+
+Or commit an encrypted [Sealed Secret](https://github.com/bitnami-labs/sealed-secrets) instead.
 
 ## Project structure
 

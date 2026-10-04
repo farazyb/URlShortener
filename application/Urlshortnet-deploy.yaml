@@ -39,6 +39,16 @@ spec:
               value: "prod"
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres-service:5432/mydb"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: POSTGRES_PASSWORD
             - name: REDIS_HOST
               value: "redis-service"
             - name: REDIS_PORT

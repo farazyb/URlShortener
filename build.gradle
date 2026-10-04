@@ -82,6 +82,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testAnnotationProcessor 'org.projectlombok:lombok'
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql'
     implementation 'redis.clients:jedis'
     implementation 'com.bucket4j:bucket4j_jdk17-core:8.18.0'
     implementation 'com.bucket4j:bucket4j_jdk17-lettuce:8.18.0'

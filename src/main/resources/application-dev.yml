@@ -1,7 +1,11 @@
 spring:
+  flyway:
+    # Local databases created earlier by ddl-auto=update have no Flyway history;
+    # baseline them at V1 instead of failing on a non-empty schema.
+    baseline-on-migrate: true
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:

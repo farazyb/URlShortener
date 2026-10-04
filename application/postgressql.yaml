@@ -37,6 +37,16 @@ spec:
           env:
             - name: POSTGRES_DB
               value: mydb
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: POSTGRES_PASSWORD
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
