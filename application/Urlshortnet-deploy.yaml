@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: urlshortner
+  name: urlshortner-service
+spec:
+  selector:
+    app: urlshortner
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: urlshortner
+  namespace: urlshortner
+  labels:
+    app: urlshortner
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: urlshortner
+  template:
+    metadata:
+      name: urlshortner
+      labels:
+        app: urlshortner
+    spec:
+      containers:
+        - name: urlshortner
+          image: farazyb75/urlshortener:latest
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgres://localhost:5432/mydb"
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always
+      

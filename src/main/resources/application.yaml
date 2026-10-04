@@ -1,67 +1,28 @@
 spring:
   application:
-    name: URlShortener
+    name: UrlShortener
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
-    url: jdbc:postgresql://localhost:5432/mydb
-    username: myuser
-    password: mypass
-
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/mydb}
+    username: ${POSTGRES_USER:myuser}
+    password: ${POSTGRES_PASSWORD:mypass}
     driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate:
-      ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        highlight_sql: true
-        generate_statistics: true  # query counts + cache hit ratio per session
-        session.events.log.LOG_QUERIES_SLOWER_THAN_MS: 25
-
-  mvc:
-    log-request-details: true
   data:
     redis:
       client-type: jedis
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      jedis:
-        pool:
-          enabled: true
       database: 0
       connect-timeout: 500ms
       timeout: 200ms
+      jedis:
+        pool:
+          enabled: true
 
-logging:
-  pattern:
-    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
-  level:
-    # --- web layer ---
-    org.springframework.web: DEBUG
-    org.springframework.web.servlet.DispatcherServlet: DEBUG
-    com.yourcompany.yourapp: DEBUG
-
-    # --- transaction boundaries ---
-    org.springframework.transaction.interceptor: TRACE
-    org.springframework.orm.jpa: DEBUG
-
-    # --- SQL ---
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE          # Hibernate 6 / Boot 3.x
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Hibernate 5 / Boot 2.x
-    org.hibernate.stat: DEBUG
-    com.zaxxer.hikari.HikariConfig: DEBUG
-    com.zaxxer.hikari.pool.HikariPool: DEBUG
-
-    # --- cache / redis ---
-    org.springframework.cache: TRACE            # hit/miss per @Cacheable call
-    org.springframework.data.redis: DEBUG
-    io.lettuce.core.protocol: DEBUG
 management:
-  endpoints.web.exposure.include: health,metrics,caches,httpexchanges,prometheus
-  endpoint.health.show-details: always
-  tracing.sampling.probability: 1.0             # dev only
-  metrics.distribution.percentiles-histogram.http.server.requests: true
+  endpoints.web.exposure.include: health,metrics,prometheus
+  endpoint.health.show-details: when-authorized
   observations.key-values.application: ${spring.application.name}
-
