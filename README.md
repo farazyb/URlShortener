@@ -116,19 +116,23 @@ The credentials can also be passed as the Gradle properties `registryUser` and `
 
 ## Kubernetes
 
-The manifests in [`application/`](application/) deploy the app (2 replicas behind a NodePort service), PostgreSQL, and Redis with a tuned config from a ConfigMap:
+The manifests in [`application/`](application/) create the `urlshortner` namespace and deploy the app (2 replicas behind a NodePort service), PostgreSQL 18 with its data on a 1Gi PersistentVolumeClaim, and Redis with a tuned config from a ConfigMap.
+
+Both the app and PostgreSQL read `POSTGRES_USER` and `POSTGRES_PASSWORD` from a Secret named `app-secrets`. It is not included in the repository, so create the namespace, then the Secret, then everything else:
 
 ```bash
-kubectl apply -f application/
+kubectl apply -f application/00-namespace.yaml
 ```
-
-Both the app and PostgreSQL read `POSTGRES_USER` and `POSTGRES_PASSWORD` from a Secret named `app-secrets` in the `urlshortner` namespace. It is not included in the repository, so create it before applying the manifests:
 
 ```bash
 kubectl create secret generic app-secrets -n urlshortner --from-literal=POSTGRES_USER=<user> --from-literal=POSTGRES_PASSWORD=<password>
 ```
 
-Or commit an encrypted [Sealed Secret](https://github.com/bitnami-labs/sealed-secrets) instead.
+```bash
+kubectl apply -f application/
+```
+
+Instead of `kubectl create secret`, you can also commit an encrypted [Sealed Secret](https://github.com/bitnami-labs/sealed-secrets).
 
 ## Project structure
 

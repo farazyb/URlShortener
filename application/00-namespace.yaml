@@ -1,0 +1,6 @@
+# Prefixed with 00- so `kubectl apply -f application/` creates it before the
+# resources that live in it (kubectl applies a directory in filename order).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: urlshortner
