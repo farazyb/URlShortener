@@ -38,9 +38,9 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "prod"
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgres://localhost:5432/mydb"
+              value: "jdbc:postgresql://postgres-service:5432/mydb"
             - name: REDIS_HOST
-              value: "redis"
+              value: "redis-service"
             - name: REDIS_PORT
               value: "6379"
           imagePullPolicy: IfNotPresent
